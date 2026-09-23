@@ -3,7 +3,7 @@ package siga;
 public class Main {
 
     public static void main(String[] args) {
-        System.out.println("=== SIGA - Atividade de Persistência e DAO (código inicial) ===\n");
+        System.out.println("=== SIGA - Atividade de Persistência e DAO ===\n");
         System.out.println("=== Demonstração da persistência em memória ===");
         ServicoMatricula servico = new ServicoMatricula(new AlunoDAOMemoria());
 
