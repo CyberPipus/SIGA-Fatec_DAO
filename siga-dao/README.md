@@ -58,7 +58,17 @@ O tipo declara que o resultado pode não existir e o compilador obriga quem cham
 Por fim, como a interface não executa nada, a comprovação é o próprio arquivo: cinco assinaturas nela, nenhum termo de SQL evidente nos nomes e nada para indicar onde os dados são salvos.
 
 3. **Implementar `AlunoDAOMemoria`**, guardando os alunos em um `Map<String, Aluno>` interno. (Opcionalmente, implemente também um `AlunoDAOBanco` que use o `BancoSimulado`.)
+R: Definimos a classe "AlunoDAOMemoria" que implementa a interface "AlunoDAO" e salva os dados num "Map<String, Aluno>" implementado por um "HashMap", tendo como sua chave a matrícula de cada aluno.
+"Nela traduzimos as cinco operações da interface em chamadas ao "Map": "inserir" e "atualizar" receberam a chamada "put" e "remover" recebeu "remove".
+"buscarPorMatricula" recebeu "get" com "Optional", para que ao "get" devolver um "null" diretamente por não encontrar a matrícula requerida, "Optional.ofNullable" o encapsula e retorna um objeto "Optional" vazio para expressar a ausência e, na presença, produz um "Optional" com o aluno encontrado.
+E "listarTodos" recebeu "values()" com a particularidade de devolver uma "Collection" que tem o papel de ser uma visão viva do "Map". A fim de evitar o vazamento de referência da estrutura interna pela visão, "new ArrayList<>(alunos.values())" assume o papel de criar uma cópia independente."
+A necessidade de produzir uma cópia independente da visão viva se justifica por ela negar alterações externas não autorizadas no "Map", como um "dao.listarTodos().clear()", apagando todos os alunos do DAO sem passar pelo método "remover", sem controle e, muito possivelmente, sem ninguém constatar até o relatório sair vazio. O DAO oferece "remover" especificamente para que uma remoção passe por ele e devolver a coleção viva criaria um segundo caminho para alterar fora da interface "AlunoDAO".
+Além do mais, "inserir" e "atualizar" apresentam corpos idênticos mas não podem estar unidos na interface por: 1 - criar algo é fundamentalmente diferente de se alterar algo - se unir ambos conceitos em "salvar" ou "salvarOuAtualizar", por exemplo, enfraquece a expressividade da interface e oculta a intenção da camada de negócio; 2 - em uma persistência concreta (SQL, JDBC, JPA/Hibernate, MongoDB) ambas as operações se distinguem quanto aos comandos no motor do banco. "inserir" executa "INSERT INTO alunos...." que cria um registro se não houver um ou uma exceção de chave primária caso já tenha um, enquanto "atualizar" executa "UPDATE alunos SET ... WHERE matricula = ..." que atualiza as colunas e o banco retorna que uma linha foi alterada se o aluno já estiver registrado, ou uma exceção de "Entidade não encontrada" se não estiver registrado.
+Por fim, "AlunoDAOMemoria" funciona sem banco de dados nem conexão com um nem SQL nem servidor. Isso permite exercitar a regra da média sem infraestrutura, ou seja, direto na memória RAM e evidenciando o item (c) do critério de sucesso.
+
 4. **Refatorar `ServicoMatricula`** para receber um `AlunoDAO` pelo construtor e remover todo o SQL da classe; ela deve conter apenas regra de negócio.
+R:
+
 5. **Demonstrar a troca** de implementação do DAO no `Main`, sem alterar uma linha da regra de negócio.
 
 ## Critério de sucesso
