@@ -67,7 +67,6 @@ Além do mais, "inserir" e "atualizar" apresentam corpos idênticos mas não pod
 Por fim, "AlunoDAOMemoria" funciona sem banco de dados nem conexão com um nem SQL nem servidor. Isso permite exercitar a regra da média sem infraestrutura, ou seja, direto na memória RAM e evidenciando o item (c) do critério de sucesso.
 
 4. **Refatorar `ServicoMatricula`** para receber um `AlunoDAO` pelo construtor e remover todo o SQL da classe; ela deve conter apenas regra de negócio.
-R:
 
 5. **Demonstrar a troca** de implementação do DAO no `Main`, sem alterar uma linha da regra de negócio.
 
